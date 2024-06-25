@@ -1,0 +1,41 @@
+---
+
+- name: "Add node repo"
+  ansible.builtin.shell:
+    cmd: "curl -sL https://rpm.nodesource.com/setup_10.x | sudo bash -"
+    
+- name: "Install epel"
+  ansible.builtin.yum:
+    name: 
+      - "epel-release"
+    state: latest
+
+
+- name: "Install dependencies"
+  ansible.builtin.yum:
+    name: 
+      - "libpqxx-devel"
+      - "gcc-c++"
+      - "patch"
+      - "readline"
+      - "readline-devel"
+      - "zlib"
+      - "zlib-devel"
+      - "libffi-devel"
+      - "openssl-devel"
+      - "make"
+      - "bzip2"
+      - "libtool"
+      - "bison"
+      - "sqlite-devel"
+      - "nodejs"
+      - automake
+      - autoconf
+      - libtool
+      - bison
+      - libyaml-devel
+      - openssl-devel
+      - curl
+      - git
+      - nano
+    state: latest

@@ -1,0 +1,70 @@
+---
+- name: "Ensure git is intalled"
+  yum:
+    name: git
+    state: present
+
+- name: "Create target directory"
+  file:
+    path: "{{ proj_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: "Clone the Git repository"
+  git:
+    repo: "https://{{ gitlab_user }}:{{ gitlab_pass }}@gitlab.slurm.io/edu/xpaste_practicum.git"
+    dest: "{{ proj_dir }}"
+    version: master
+    update: yes
+
+- name: "Install Rails dependencies"
+  ansible.builtin.shell:
+    cmd: "~/.rbenv/bin/rbenv exec bundle install"
+    chdir: "{{ proj_dir }}"
+
+- name: Create project directories
+  ansible.builtin.file:
+    path: '{{ item }}'
+    state: directory
+    mode: g+rx,u+rwx
+  with_items:
+    - '{{ proj_dir }}'
+    - '{{ proj_dir }}/releases'
+    - '{{ proj_dir }}/shared/log'
+    - '{{ proj_dir }}/shared/config'
+    - '{{ proj_dir }}/shared/pids'
+    - '{{ proj_dir }}/shared/sockets'
+    - '{{ proj_dir }}/shared/tmp/cache'
+    - '{{ proj_dir }}/shared/vendor/bundle'
+    - '{{ proj_dir }}/shared/public/assets'
+
+- name: "Set Secret key"
+  ansible.builtin.command:
+    cmd: "~/.rbenv/bin/rbenv  exec bundle exec rake secret"
+    chdir: "{{ proj_dir }}"
+  register: SECRET_KEY
+
+- name: "Copy service templates"
+  ansible.builtin.template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  with_items: 
+    - {src: "app.conf.j2", dest: "/etc/nginx/conf.d/app.conf" }
+    - {src: "nginx.conf.j2", dest: "/etc/nginx/nginx.conf" }
+    - {src: "puma.rb.j2", dest: "{{ proj_dir}}/config/puma.rb" }
+    - {src: "unit_rails_app.service.j2", dest: "/etc/systemd/system/rails_app.service" }
+  notify:
+    - "Restart nginx"
+
+- name: "restart service"
+  ansible.builtin.systemd:
+    name: "rails_app"
+    enabled: true
+    daemon_reload: true
+    state: "restarted"
+  register: rails_app_details
+  until: rails_app_details.status.ActiveState == "active"
+  retries: 2
+  delay: 5
+
+

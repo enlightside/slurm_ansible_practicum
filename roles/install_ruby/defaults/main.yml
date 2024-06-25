@@ -1,0 +1,5 @@
+---
+# defaults file for install_ruby
+
+rvm_bin: /usr/local/rvm/bin/rvm
+gem_bin: /usr/local/rvm/rubies/ruby-2.6.0/bin/gem

@@ -1,0 +1,5 @@
+---
+# tasks file for environment_settings
+
+- name: "Project Settings"
+  include_tasks: "project_settings.yml"

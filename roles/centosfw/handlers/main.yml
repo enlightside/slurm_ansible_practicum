@@ -1,0 +1,11 @@
+---
+- name: Reboot system if SELinux status changed
+  reboot:
+    msg: "Reboot initiated by Ansible due to SELinux status change."
+    reboot_timeout: 600
+  when: reboot_required
+
+- name: Reload firewalld
+  ansible.buildin.service:
+    name: firewalld
+    state: reloaded

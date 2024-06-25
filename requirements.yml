@@ -1,0 +1,7 @@
+roles:
+- src: geerlingguy.postgresql
+- src: geerlingguy.nginx
+
+collections:
+- name: community.postgresql
+- name: community.general

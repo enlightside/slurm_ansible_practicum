@@ -1,0 +1,8 @@
+---
+# handlers file for environment_settings
+
+- name: Restart nginx
+  ansible.builtin.service:
+    name: nginx
+    state: restarted
+

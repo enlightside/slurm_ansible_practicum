@@ -1,0 +1,57 @@
+- block:
+    - name: Install rbenv
+      ansible.builtin.git:
+        repo: https://github.com/rbenv/rbenv.git
+        dest: ~/.rbenv
+
+    - name: Set rbenv init and path
+      ansible.builtin.lineinfile:
+        dest: ~/.bashrc
+        state: present
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+      with_items:
+        - { regexp: '^PATH.+rbenv', line: 'PATH="$HOME/.rbenv/bin:$PATH"' }
+        - { regexp: '^eval.+rbenv', line: 'eval "$(rbenv init -)"' }
+
+    - name: Install rbenv vars plugin
+      ansible.builtin.git:
+        repo: https://github.com/rbenv/rbenv-vars.git
+        dest: ~/.rbenv/plugins/rbenv-vars
+
+    - name: Install ruby-build
+      ansible.builtin.git:
+        repo: https://github.com/rbenv/ruby-build.git
+        dest: ~/.rbenv/plugins/ruby-build
+
+    - name: Check ruby {{ ruby_version }} installed
+      ansible.builtin.shell: ~/.rbenv/bin/rbenv versions --bare | grep {{ ruby_version }}
+      register: ruby_installed
+      ignore_errors: yes
+
+    - name: Install ruby {{ ruby_version }}
+      ansible.builtin.command: ~/.rbenv/bin/rbenv install {{ ruby_version }} -v
+      when: ruby_installed is failed
+
+    - name: Set global ruby is {{ ruby_version }}
+      ansible.builtin.shell: ~/.rbenv/bin/rbenv global {{ ruby_version }}
+
+    - name: Create gemrc file
+      ansible.builtin.file:
+        path: ~/.gemrc
+        state: touch
+
+    - name: Config gem
+      ansible.builtin.lineinfile:
+        dest: ~/.gemrc
+        state: present
+        regexp: '^gem.*no-document'
+        line: 'gem: --no-document'
+
+    - name: Check bundler installed
+      ansible.builtin.shell: ~/.rbenv/bin/rbenv exec gem list | grep bundler | cat
+      register: bundler_installed
+
+    - name: Install bundler
+      ansible.builtin.command: ~/.rbenv/bin/rbenv exec gem install bundler
+      when: bundler_installed.stdout == ''

@@ -1,0 +1,25 @@
+[Unit]
+Description=Puma web server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Environment=SECRET_KEY_BASE={{ SECRET_KEY.stdout_lines | first()  }}
+Environment=RAILS_ENV={{ RAILS_ENV }}
+Environment=RAILS_LOG_TO_STDOUT=1
+Environment=DB_HOST={{ DB_HOST }}
+Environment=DB_PORT={{ DB_PORT }}
+Environment=DB_NAME={{ DB_NAME }}
+Environment=DB_USER={{ DB_USER }}
+Environment=DB_PASSWORD={{ DB_PASSWORD }}
+
+WorkingDirectory={{ proj_dir }}
+
+ExecStart=/bin/bash -lc '~/.rbenv/bin/rbenv exec  bundle exec rake db:migrate  && ~/.rbenv/bin/rbenv exec bundle exec puma -C {{ proj_dir }}/config/puma.rb'
+ExecStop=/bin/bash -lc '~/.rbenv/bin/rbenv exec bundle exec pumactl -S {{ proj_dir }}/shared/pids/puma.state stop'
+TimeoutSec=15
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

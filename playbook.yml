@@ -1,0 +1,13 @@
+- name: "Deploy xpaste APP"
+  hosts: centos7
+  become: true
+  become_user: root
+  vars_files:
+    - ./vars/vars.yml
+  
+  roles:
+    - { role: "centosfw" }
+    - { role: "geerlingguy.postgresql" }
+    - { role: "geerlingguy.nginx" }
+    - { role: "install_ruby" }
+    - { role: "environment_settings" }

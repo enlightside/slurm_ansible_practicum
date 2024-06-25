@@ -1,0 +1,8 @@
+---
+# tasks file for install_ruby
+
+- name: "Install Dependencies"
+  include_tasks: "install_dependencies.yml"
+
+- name: "Install Ruby"
+  include_tasks: "install_rbenv_ruby.yml"

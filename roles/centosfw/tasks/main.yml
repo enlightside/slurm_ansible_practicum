@@ -1,0 +1,22 @@
+---
+- name: Ensure SELinux is disabled
+  ansible.posix.selinux:
+    state: disabled
+  register: selinux_result
+  notify:
+    - Reboot system if SELinux status changed
+
+- name: Ensure firewalld is enabled and running
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Open port 80/tcp in firewalld
+  firewalld:
+    port: 80/tcp
+    permanent: true
+    state: enabled
+    immediate: yes
+  notify:
+    - Reload firewalld
