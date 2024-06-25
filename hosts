@@ -1,3 +1,2 @@
-[stands]
-stand1 ansible_host=192.168.51.9
-stand2 ansible_host=192.168.4.8
+[centos]
+centos7 ansible_host=192.168.4.8 
