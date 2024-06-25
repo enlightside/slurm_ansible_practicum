@@ -10,8 +10,9 @@ Target Host: Centos 7 (name: centos7)
  1. Склонировать репозиторий: 
  `git clone https://github.com/enlightside/slurm_ansible_practicum.git`
  2. Перейти в папку slurm_ansible_practicum
- 3. Скопировать ssh-ключ на target host: ssh-copy-id root@centos7
- 4. Запустить установку коллекций и ролей с Ansible Galaxy: 
+ 3. Выставить значение ip-адреса target host в файле hosts
+ 4. Скопировать ssh-ключ на target host: ssh-copy-id root@centos7
+ 5. Запустить установку коллекций и ролей с Ansible Galaxy: 
  `ansible-galaxy install -r requirements.yml`
- 5. Запустить Ansible Playbook с ключом `--ask-vault-pass`: 
+ 6. Запустить Ansible Playbook с ключом `--ask-vault-pass`: 
  `ansible-playbook --ask-vault-pass playbook.yml`
