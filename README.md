@@ -16,3 +16,5 @@ Target Host: Centos 7 (name: centos7)
  `ansible-galaxy install -r requirements.yml`
  6. Запустить Ansible Playbook с ключом `--ask-vault-pass`: 
  `ansible-playbook --ask-vault-pass playbook.yml`
+
+Приложение можно будет открыть в браузере по ip-адресу target host
